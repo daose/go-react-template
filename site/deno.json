@@ -7,13 +7,13 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "jsxImportSource": "react",
-    "jsxImportSourceTypes": "npm:@types/react@^19.0.2",
+    "jsxImportSourceTypes": "npm:@types/react@^18.3.1",
     "lib": ["dom", "deno.ns"]
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@1",
     "esbuild": "npm:esbuild@^0.24.2",
-    "react": "npm:react@^19.0.0",
-    "react-dom": "npm:react-dom@^19.0.0"
+    "react": "npm:react@^18.3.1",
+    "react-dom": "npm:react-dom@^18.3.1"
   }
 }

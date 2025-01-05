@@ -1,0 +1,7 @@
+genrule(
+  name = "deno_main",
+  srcs = glob(["main.ts", "deno.json", "deno.lock", "client/**"]),
+  outs = ["build/app.js", "build/index.html", "build/styles.css"],
+  cmd = "deno run -A $(location main.ts) $(location build/index.html) $(location build/app.js) $(location build/styles.css)",
+  visibility = ["//:__pkg__"]
+)

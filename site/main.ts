@@ -8,45 +8,38 @@ import { promisify } from "node:util";
 const brotliCompressAsync = promisify(brotliCompress);
 
 if (import.meta.main) {
-  try {
-    Deno.removeSync("build", { recursive: true });
-  } catch { /* clean complete */ }
-  Deno.mkdirSync("build");
+  const [indexPath, appPath, stylePath] = Deno.args;
   await Promise.all([
     Deno.writeTextFile(
-      "build/index.html",
+      indexPath,
       `<!doctype html>${renderToString(App())}`,
     ),
     esbuild.build({
-      entryPoints: ["client/index.tsx"],
+      entryPoints: ["site/client/index.tsx"],
       bundle: true,
       minify: true,
       jsx: "automatic",
-      outfile: "build/app.js",
+      outfile: appPath,
     }),
     esbuild.build({
-      entryPoints: ["client/styles.css"],
+      entryPoints: ["site/client/styles.css"],
       bundle: true,
       minify: true,
-      outfile: "build/styles.css",
+      outfile: stylePath,
     }),
   ]);
   console.log("Files generated, now compressing");
   const jobs = [];
-  for (const dirEntry of Deno.readDirSync("build")) {
-    if (dirEntry.isFile) {
-      const fileName = dirEntry.name;
-      if (
-        [".js", ".html", ".css"].some((suffix) => fileName.endsWith(suffix))
-      ) {
-        jobs.push(
-          Deno.readTextFile("build/" + fileName).then((content) =>
-            brotliCompressAsync(content)
-          ).then((buf) => {
-            Deno.writeFile("build/" + fileName, buf);
+  for (const path of Deno.args) {
+    if (
+      [".js", ".html", ".css"].some((suffix) => path.endsWith(suffix))
+    ) {
+      jobs.push(
+        Deno.readTextFile(path).then((content) => brotliCompressAsync(content))
+          .then((buf) => {
+            Deno.writeFile(path, buf);
           }),
-        );
-      }
+      );
     }
   }
   await Promise.all(jobs);
